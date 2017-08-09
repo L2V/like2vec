@@ -109,18 +109,22 @@ object Prediction {
         // Determine type of  neighbors calculation - "LSH" or "NN"
         val neighborType = param.ntype
 
+        // Nearest Neighbors calculation
         if (neighborType == "LSH") {
           val neighbors = getNeighbors(param.embeddings, param.dim, param.tables, param.signature, param.neighbors)(sc)
+
+          // Calculate prediction with Aproximate Nearest Neighbors
           val predictions = predictionCalculation(trainData, neighbors, param.test)(sc)
-//          sc.parallelize(Seq(predictions._2)).coalesce(1).saveAsTextFile(param.rmse) //._2
-          predictions.coalesce(1).saveAsTextFile(param.predictions) // ._1
+          // Save prediction in one text file
+          predictions.coalesce(1).saveAsTextFile(param.predictions)
         }
         else {
           val exactNeighbors = getExactNeighbors(param.embeddings, param.test, param.neighbors)(sc)
-          val predictions = predictionCalculation(trainData, exactNeighbors, param.test)(sc)
 
-//          sc.parallelize(Seq(predictions._2)).coalesce(1).saveAsTextFile(param.rmse) //._2
-          predictions.coalesce(1).saveAsTextFile(param.predictions) // ._1
+          // Calculate prediction with Exact Nearest Neighbors
+          val predictions = predictionCalculation(trainData, exactNeighbors, param.test)(sc)
+          // Save prediction in one text file
+          predictions.coalesce(1).saveAsTextFile(param.predictions)
         }
     }.getOrElse {
       sys.exit(1)
@@ -128,15 +132,28 @@ object Prediction {
   } // end of main
 
 
+  /** Calculates the predicted rating for each of the User/Item pairs in the test set
+    * method.
+    *
+    * @param trainData data used for training. Train data is used access ratings of neighbors
+    * @param neighbors RDD containing a tuple made out of each User in train set and a list of K tuples (Neighbor, Neighbor's
+    *                  distance)
+    * @param testFile Contains list of user, item pairs to be predicted
+    * @param sc Implicit Spark Context
+    * @return Tuple containing (testUser, testMovie, testRating, predictedRate) for each entry in testFile
+    */
+
   def predictionCalculation(trainData: RDD[(Int, List[(Long, Double)])], neighbors: RDD[(Long, List[(Long, Double)])], testFile: String)(implicit sc: SparkContext) = {
 
-    // Load data using loaders
+    // Load train data
     val trainDataAsMap = trainData.collectAsMap()
-    val neighborDataAsMap = neighbors.collectAsMap()
-    val neighborUserKeys = neighbors.collectAsMap().keySet
     val trainDataMovieKeys = trainDataAsMap.keySet
 
-    // Load test file
+    // Load neighbors data
+    val neighborDataAsMap = neighbors.collectAsMap()
+    val neighborUserKeys = neighbors.collectAsMap().keySet
+
+    // Load test file and format it as (testUser, testMovie, testRating)
     val predictions = sc.textFile(testFile).filter(!_.isEmpty()).map { line =>
       val test = line.split(",")
       val testUser = test(0).toLong
@@ -145,41 +162,36 @@ object Prediction {
       (testUser, testMovie, testRating)
     }
 
-    val neighborPredictions = predictions.filter(f => neighborUserKeys.contains(f._1) && trainDataMovieKeys.contains(f._2)).map {
+    val neighborPredictions = predictions.filter(
+      // filters out predictions for which neighbors have not rated items
+      // and items that are not in the training set
+      f => neighborUserKeys.contains(f._1) && trainDataMovieKeys.contains(f._2)).map {
+
       case (testUser, testMovie, testRating) =>
-
         val trainuser = trainDataAsMap.apply(testMovie).toMap
-
         val neighborUser = neighborDataAsMap.apply(testUser).toMap
-
         val userweight = trainuser.keySet.intersect(neighborUser.keySet).map {
-          f => (f, trainuser.get(f).getOrElse(0), neighborUser.get(f).getOrElse(0))
+          // TODO: this is an area that can be improved if we filter neighbors prior to calculation
+          f => (f, trainuser.getOrElse(f, 0), neighborUser.getOrElse(f, 0))
         }.toList
 
         val totalDistance = userweight.map(_._3).sum
 
         val predictedRate = userweight.map {
-          case (user, rating, distance) => (distance / totalDistance) * rating
-
+          case (user, rating, distance) =>
+            (distance / totalDistance) * rating
         }.sum
-
-//        val errorCalc = math.pow((testRating - predictedRate), 2)
-
-
-        (testUser, testMovie, testRating, predictedRate) // , errorCalc)
-
-
+        (testUser, testMovie, testRating, predictedRate)
     }
-//    val denom = neighborPredictions.map(_._5).count()
-//    val numerator = neighborPredictions.map(_._5).reduce((acc, elem) => (acc + elem))
-//
-//    val rmseValue = Math.sqrt(numerator / denom)
-
-
-    neighborPredictions //, rmseValue)
-
-
+    neighborPredictions
   }
+
+
+  /** Calculates rating prediction using weighted average of each neighbors rating divided by similarity
+    *
+    * @param topItems List containing top K tuples (user rating, distance)
+    * @return average prediction
+    * */
 
   def weightedAverage(topItems: List[(Double, Double)]): Double = {
 
@@ -191,6 +203,13 @@ object Prediction {
     }
     num / denom
   }
+
+  
+  /** Calculates rating prediction using average of neighbors rating divided by number of neighbors
+    *
+    * @param topItems List containing top K tuples (user rating, distance)
+    * @return average prediction
+    */
 
   def naiveAverage(topItems: List[(Double, Double)]): Double = {
     val numMovies = 10
