@@ -13,7 +13,7 @@ libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value
 // new config
 lazy val root = (project in file(".")).settings(
   name := "prediction",
-  version := "2.1",
+  version := "2.2",
   scalaVersion := "2.11.1",
   libraryDependencies ++= Seq(
     "org.apache.spark" %% "spark-core" % "2.1.0" % "provided",

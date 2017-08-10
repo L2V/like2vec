@@ -204,7 +204,7 @@ object Prediction {
     num / denom
   }
 
-  
+
   /** Calculates rating prediction using average of neighbors rating divided by number of neighbors
     *
     * @param topItems List containing top K tuples (user rating, distance)
