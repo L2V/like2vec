@@ -1,0 +1,17 @@
+EMBEDDINGS:
+  degree: 30
+  dim: 100
+  numWalks: 10
+  p: 5
+  q: 1
+  walkLength: 80
+  window: 10
+EVALUATION:
+  options: rmse
+LLR:
+  options: default
+  threshold: 0.5
+  useroritem: user
+PREDICTIONS:
+  neighbors: 900
+  ntype: KNN
