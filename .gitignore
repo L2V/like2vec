@@ -6,3 +6,4 @@ src/prediction/project/project
 src/llr/project
 src/llr/target
 src/llr/.idea
+src/evaluation/.idea
