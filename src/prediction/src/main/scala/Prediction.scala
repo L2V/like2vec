@@ -147,11 +147,11 @@ object Prediction {
 
     // Load train data
     val trainDataAsMap = trainData.collectAsMap()
-    val trainDataMovieKeys = trainDataAsMap.keySet
+    val neighborDataAsMap = neighbors.collectAsMap()
 
     // Load neighbors data
-    val neighborDataAsMap = neighbors.collectAsMap()
     val neighborUserKeys = neighbors.collectAsMap().keySet
+    val trainDataMovieKeys = trainDataAsMap.keySet
 
     // Load test file and format it as (testUser, testMovie, testRating)
     val predictions = sc.textFile(testFile).filter(!_.isEmpty()).map { line =>
@@ -166,24 +166,23 @@ object Prediction {
       // filters out predictions for which neighbors have not rated items
       // and items that are not in the training set
       f => neighborUserKeys.contains(f._1) && trainDataMovieKeys.contains(f._2)).map {
-
       case (testUser, testMovie, testRating) =>
         val trainuser = trainDataAsMap.apply(testMovie).toMap
         val neighborUser = neighborDataAsMap.apply(testUser).toMap
         val userweight = trainuser.keySet.intersect(neighborUser.keySet).map {
           // TODO: this is an area that can be improved if we filter neighbors prior to calculation
-          f => (f, trainuser.getOrElse(f, 0), neighborUser.getOrElse(f, 0))
+          f => (f, trainuser.get(f).getOrElse(0).asInstanceOf[Double], neighborUser.get(f).getOrElse(0).asInstanceOf[Double])
         }.toList
 
         val totalDistance = userweight.map(_._3).sum
-
         val predictedRate = userweight.map {
-          case (user, rating, distance) =>
-            (distance / totalDistance) * rating
+          case (user, rating, distance) => ((distance / totalDistance) * rating)
         }.sum
         (testUser, testMovie, testRating, predictedRate)
     }
     neighborPredictions
+
+
   }
 
 
