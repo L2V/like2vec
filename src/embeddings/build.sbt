@@ -1,6 +1,6 @@
 name := "n2v"
 
-version := "3.7"
+version := "3.8"
 
 scalaVersion := "2.11.1"
 

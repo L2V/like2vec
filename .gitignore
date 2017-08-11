@@ -7,3 +7,6 @@ src/llr/project
 src/llr/target
 src/llr/.idea
 src/evaluation/.idea
+src/embeddings/.idea
+src/embeddings/project
+src/embeddings/target
