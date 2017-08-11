@@ -8,6 +8,7 @@ import org.apache.spark.graphx.{EdgeTriplet, Graph, _}
 import com.graph.GraphOps
 import com.graph.graph.{EdgeAttr, NodeAttr}
 
+
 object Node2vec extends Serializable {
   lazy val logger: Logger = LoggerFactory.getLogger(getClass.getName);
 
@@ -59,6 +60,8 @@ object Node2vec extends Serializable {
   }
 
   def initTransitionProb(): this.type = {
+//    log.warn("Started InitTransitionProb")
+    logger.warn("Started InitTransitionProb")
     val bcP = context.broadcast(config.p)
     val bcQ = context.broadcast(config.q)
 
@@ -78,17 +81,23 @@ object Node2vec extends Serializable {
 
         edgeTriplet.attr
       }.cache
+    logger.warn("Completed InitTransitionProb")
+//    log.warn("Completed InitTransitionProb")
+
 
     this
   }
 
   def randomWalk(): this.type = {
+    logger.warn("Started Random Walk")
     val edge2attr = graph.triplets.map { edgeTriplet =>
       (s"${edgeTriplet.srcId}${edgeTriplet.dstId}", edgeTriplet.attr)
     }.repartition(200).cache
     edge2attr.first
 
     for (iter <- 0 until config.numWalks) {
+      logger.warn("Random Walk: " + iter)
+      logger.warn(s"Random Walk: $iter with")
       var prevWalk: RDD[(Long, ArrayBuffer[Long])] = null
       var randomWalk = graph.vertices.map { case (nodeId, clickNode) =>
         val pathBuffer = new ArrayBuffer[Long]()
@@ -131,11 +140,13 @@ object Node2vec extends Serializable {
         randomWalkPaths = randomWalk
       }
     }
+    logger.warn("Completed Random Walk")
 
     this
   }
 
   def embedding(): this.type = {
+    logger.warn("Started embedding")
     val randomPaths = randomWalkPaths.map { case (vertexId, pathBuffer) =>
       Try(pathBuffer.map(_.toString).toIterable).getOrElse(null)
     }.filter(_!=null)
@@ -146,6 +157,7 @@ object Node2vec extends Serializable {
   }
 
   def save(): this.type = {
+    logger.warn("Saving Model and Vectors")
     this.saveRandomPath()
       .saveModel()
       .saveVectors()
@@ -164,12 +176,14 @@ object Node2vec extends Serializable {
   }
 
   def saveModel(): this.type = {
+    logger.warn("Saving Model")
     Word2vec.save(config.output)
 
     this
   }
 
   def saveVectors(): this.type = {
+    logger.warn("Saving Vectors")
     val node2vector = context.parallelize(Word2vec.getVectors.toList)
       .map { case (nodeId, vector) =>
         (nodeId.toLong, vector.mkString(" "))

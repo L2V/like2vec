@@ -2,6 +2,9 @@ import java.io.Serializable
 import org.apache.spark.{SparkContext, SparkConf}
 import scopt.OptionParser
 import com.lib.AbstractParams
+import org.apache.log4j.LogManager
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
 
 object Main {
   object Command extends Enumeration {
@@ -104,6 +107,7 @@ object Main {
 //        .setMaster("local[*]")
 //        .set("spark.executor.memory", "4g")
 //      val context: SparkContext = new SparkContext(conf)
+
       val context: SparkContext = new SparkContext(new SparkConf().setAppName("Node2Vec"))
 
 // To test locally
