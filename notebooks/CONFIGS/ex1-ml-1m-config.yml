@@ -2,7 +2,7 @@ JARS:
     LLR_JAR: "llr-assembly-1.2.jar"
     EMBEDDINGS_JAR: "n2v-assembly-3.7.jar"
     PREDICTIONS_JAR: "prediction-assembly-2.2.jar"
-    EVALUATION_JAR: "evaluation-assembly-1.1.jar"
+    EVALUATION_JAR: "evaluation-assembly-1.5.jar"
 PATHS:
     JARS: "s3://sandbox-l2v/JARs/"
     OUTPUT: "s3://sandbox-l2v/datasets/ml-1m/"
