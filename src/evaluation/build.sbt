@@ -1,8 +1,10 @@
-
+/**
+  * version- 1.2: Master Option set to run both on local and cluster
+ */
 
 name := "evaluation"
 
-version := "1.1"
+version := "1.2"
 
 scalaVersion := "2.11.11"
 
@@ -36,4 +38,3 @@ assemblyMergeStrategy in assembly := {
   case x => MergeStrategy.first
   case PathList("reference.conf") => MergeStrategy.concat
 }
-
