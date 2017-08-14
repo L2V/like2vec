@@ -43,6 +43,8 @@ object rmse {
       sc.parallelize(Seq(rmseValue)).saveAsTextFile(outputFile+"/rmse")
 
 
+
+
     }
 
 

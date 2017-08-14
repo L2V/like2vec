@@ -1,4 +1,4 @@
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.SparkContext
 
 /**
   * Created by Dungeoun on 7/20/17.
@@ -9,7 +9,7 @@ object map {
 
     //val sc = new SparkContext("local","MeanAveragePrecision");
 
-    val sc = new SparkContext(new SparkConf().setAppName("MeanAveragePrecision").setMaster("local[*]").set("spark.driver.allowMultipleContexts", "true"))
+    //val sc = new SparkContext(new SparkConf().setAppName("MeanAveragePrecision").setMaster("local[*]").set("spark.driver.allowMultipleContexts", "true"))
 
     val actualRatings = sc.textFile(inputFile).map { line =>
 
@@ -55,13 +55,16 @@ object map {
 
 
 
-    averagePrecision.saveAsTextFile("/Users/Dungeoun/Documents/SkymindLabsInternship/raghu/Like2Vec/evaluation/src/main/resources/mapOutput")
+    //averagePrecision.saveAsTextFile("/Users/Dungeoun/Documents/SkymindLabsInternship/raghu/Like2Vec/evaluation/src/main/resources/mapOutput")
 
     val mapK =   (averagePrecision.reduce(_+_) /averagePrecision.count())
 
-    println(mapK)
+    //println(mapK)
 
     sc.parallelize(Seq(mapK)).saveAsTextFile(outputFile+"/map");
+
+
+
 
 
 
@@ -70,9 +73,10 @@ object map {
   def avgPrecisionK(actual: List[Long], predicted: List[Long], k: Int):
   Double = {
     // val predK = predicted.take(k)
-    actual.foreach(println)
 
-    predicted.foreach(println)
+    //actual.foreach(println)
+
+    //predicted.foreach(println)
 
     var score = 0.0
     var numHits = 0.0
