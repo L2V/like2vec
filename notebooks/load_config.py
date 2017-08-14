@@ -62,9 +62,24 @@ def write_PRED_cli(l2v_params, l2v_cfg, output_for_embeddings, llr_params_serial
     prediction_path = l2v_cfg["PATHS"]["OUTPUT"] + "predictions/" + p_output_folder
     rmse_path = l2v_cfg["PATHS"]["OUTPUT"] + "rmse/" + p_output_folder
     prediction_EMR = """spark-submit --deploy-mode cluster --class Prediction --master yarn-cluster {} --dim {} --ntype {} --train {} --test {} --embedding {} --neighbors {} --rmse {} --predictions {}""".format(prediction_JAR, embeddings_d, p_ntype, l2v_cfg["DATA"]["TRAIN"], l2v_cfg["DATA"]["VALIDATION"], emb_path, p_neighbors, rmse_path, prediction_path)
-    return prediction_EMR
+    return prediction_EMR, p_output_folder, prediction_path
 
-# TODO: Create function for evaluation
+
+
+def write_EVAL_cli(l2v_cfg, l2v_params, p_output_folder, prediction_path):
+
+    evaluation_JAR = l2v_cfg["PATHS"]["JARS"] + l2v_cfg["JARS"]["EVALUATION_JAR"]
+
+    options = l2v_params["EVALUATION"]["options"]
+
+    inputFile = prediction_path + "/part-00000"
+
+    outputFile = l2v_cfg["PATHS"]["OUTPUT"] + "eval/" + p_output_folder
+
+    evaluation_EMR = """spark-submit --deploy-mode cluster --class eval --master yarn {} --options {} --inputFile {} --outputFile {}""".format(evaluation_JAR,options,inputFile,outputFile)
+
+    return evaluation_EMR
+
 
 def params_to_cli(path_to_l2v_config, path_to_l2v_params):
     # load params
@@ -74,11 +89,12 @@ def params_to_cli(path_to_l2v_config, path_to_l2v_params):
     # embeddings command
     emb, output_for_embeddings, embs, n2v, embeddings_d = write_EMB_cli(l2v_params, l2v_cfg, output_folder_LLR, llr_params_serialization)
     # prediction command
-    pred = write_PRED_cli(l2v_params, l2v_cfg, output_for_embeddings, llr_params_serialization, embs, n2v, embeddings_d)
+    pred, p_output_folder, prediction_path = write_PRED_cli(l2v_params, l2v_cfg, output_for_embeddings, llr_params_serialization, embs, n2v, embeddings_d)
     # evaluation command
-    # eval =
+    evaluation = write_EVAL_cli(l2v_cfg, l2v_params, p_output_folder, prediction_path)
 
-    return llr, emb, pred
+    return llr, emb, pred, evaluation
+
 
 def create_steps(llr=None, emb=None, pred=None, name=''):
     if llr != None:
@@ -134,4 +150,4 @@ def create_steps(llr=None, emb=None, pred=None, name=''):
 
 
 if __name__ == '__main__':
-    llr, emb, pred = params_to_cli("CONFIGS/ex1-ml-1m-config.yml", "CONFIGS/ex3420-du05d100w10l80n10d30p5q1-900-072717-params.yml")
+    llr, emb, pred, evaluation = params_to_cli("CONFIGS/ex1-ml-1m-config.yml", "CONFIGS/ex3420-du05d100w10l80n10d30p5q1-900-072717-params.yml")
