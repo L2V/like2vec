@@ -96,7 +96,7 @@ def params_to_cli(path_to_l2v_config, path_to_l2v_params):
     return llr, emb, pred, evaluation
 
 
-def create_steps(llr=None, emb=None, pred=None, name=''):
+def create_steps(llr=None, emb=None, pred=None, evaluation=None, name=''):
     if llr != None:
         Steps=[
 
@@ -123,6 +123,14 @@ def create_steps(llr=None, emb=None, pred=None, name=''):
                 'Jar': 'command-runner.jar',
                 'Args': (pred).split(),
             }
+        },
+            {
+            'Name': name + '-EVAL',
+            'ActionOnFailure': 'CONTINUE',
+            'HadoopJarStep': {
+                'Jar': 'command-runner.jar',
+                'Args': (evaluation).split(),
+            }
         }
     ]
     else:
@@ -142,6 +150,14 @@ def create_steps(llr=None, emb=None, pred=None, name=''):
                 'Jar': 'command-runner.jar',
                 'Args': (pred).split(),
             }
+        },
+            {
+            'Name': name + '-EVAL',
+            'ActionOnFailure': 'CONTINUE',
+            'HadoopJarStep': {
+                'Jar': 'command-runner.jar',
+                'Args': (evaluation).split(),
+            }
         }
     ]
 
@@ -150,4 +166,7 @@ def create_steps(llr=None, emb=None, pred=None, name=''):
 
 
 if __name__ == '__main__':
+
+#To run this package, use the command below, make sure to change config and params files
+
     llr, emb, pred, evaluation = params_to_cli("CONFIGS/ex1-ml-1m-config.yml", "CONFIGS/ex3420-du05d100w10l80n10d30p5q1-900-072717-params.yml")
