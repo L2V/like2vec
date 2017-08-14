@@ -1,10 +1,15 @@
 /**
   * version- 1.2: Master Option set to run both on local and cluster
- */
+  * version- 1.3: sc error resolved in map module
+  * version- 1.4: removed sc.stop
+  * version- 1.5: removed master
+  *
+  */
+
 
 name := "evaluation"
 
-version := "1.2"
+version := "1.5"
 
 scalaVersion := "2.11.11"
 
