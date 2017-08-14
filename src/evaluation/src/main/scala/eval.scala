@@ -19,7 +19,7 @@ object eval {
     *
     */
 
-  case class Params(master: String = "master",
+  case class Params(master: String = "local",
                     options: String = "rmse",
                     //useroritem: String = "-u",
                     //threshold: Double = 0.6,
@@ -41,7 +41,7 @@ object eval {
 
     val defaultParams = Params()
 
-    val parser = new OptionParser[Params]("llr_scala") {
+    val parser = new OptionParser[Params]("eval_scala") {
 
       head("Main")
       opt[String]("master")
@@ -124,7 +124,7 @@ object eval {
     System.setProperty("spark.locality.wait", "10000")
     //val sc = new SparkContext("local", "CooccurrenceAnalysis");
 
-    val sc = new SparkContext(new SparkConf().setAppName("Evaluation").setMaster(master))
+    val sc = new SparkContext(new SparkConf().setAppName("Evaluation"))//.setMaster(master))
 
 
     if (options == "rmse"){
@@ -144,11 +144,15 @@ object eval {
     } else if (options == "allMetrics"){
 
       rmse.calcRMSE(inputFile, outputFile, sc)
+
       map.calcMAP(inputFile, outputFile, sc)
 
       //sc.parallelize(Seq(rmseResult,mapResult)).saveAsTextFile(outputFile);
 
+
+
     }
+
 
 
   }
