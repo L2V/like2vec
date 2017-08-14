@@ -123,7 +123,9 @@ object eval {
     //   System.setProperty("spark.kryoserializer.buffer.mb", "8")
     System.setProperty("spark.locality.wait", "10000")
     //val sc = new SparkContext("local", "CooccurrenceAnalysis");
-    val sc = new SparkContext(new SparkConf().setAppName("Evaluation").setMaster("local[*]"))
+
+    val sc = new SparkContext(new SparkConf().setAppName("Evaluation").setMaster(master))
+
 
     if (options == "rmse"){
 
