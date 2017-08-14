@@ -7,7 +7,7 @@ EMBEDDINGS:
   walkLength: 80
   window: 10
 EVALUATION:
-  options: rmse
+  options: allMetrics
 LLR:
   options: default
   threshold: 0.5
