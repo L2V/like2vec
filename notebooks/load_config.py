@@ -61,7 +61,7 @@ def write_PRED_cli(l2v_params, l2v_cfg, output_for_embeddings, llr_params_serial
     p_output_folder = llr_params_serialization + "-" + embs + n2v + "-" + str(p_neighbors) + "-" + today
     prediction_path = l2v_cfg["PATHS"]["OUTPUT"] + "predictions/" + p_output_folder
     rmse_path = l2v_cfg["PATHS"]["OUTPUT"] + "rmse/" + p_output_folder
-    prediction_EMR = """spark-submit --deploy-mode cluster --class Prediction --master yarn-cluster {} --dim {} --ntype {} --train {} --test {} --embedding {} --neighbors {} --rmse {} --predictions {}""".format(prediction_JAR, embeddings_d, p_ntype, l2v_cfg["DATA"]["TRAIN"], l2v_cfg["DATA"]["VALIDATION"], emb_path, p_neighbors, rmse_path, prediction_path)
+    prediction_EMR = """spark-submit --deploy-mode cluster --class Prediction --master yarn-cluster {} --dim {} --ntype {} --train {} --test {} --embedding {} --neighbors {} --predictions {}""".format(prediction_JAR, embeddings_d, p_ntype, l2v_cfg["DATA"]["TRAIN"], l2v_cfg["DATA"]["VALIDATION"], emb_path, p_neighbors, prediction_path)
     return prediction_EMR, p_output_folder, prediction_path
 
 
