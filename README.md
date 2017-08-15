@@ -3,11 +3,12 @@ Like2Vec is a neaborhood based recommendation algorithm that uses network embedd
 
 ![like2vec](https://raw.githubusercontent.com/L2V/like2vec/master/reports/figures/l2v-components.png "Pipeline components")
 
-The components of the pipeline are:
-[Utility Matrix - LLR](https://github.com/L2V/like2vec/wiki/Utility-Matrix---LLR)
-[Network Embeddings](https://github.com/L2V/like2vec/wiki/Network-Embeddings)
-[Prediction](https://github.com/L2V/like2vec/wiki/Prediction)
-[Evaluation](https://github.com/L2V/like2vec/wiki/Evaluation)
+The components of the pipeline are:                      
++ [Utility Matrix - LLR](https://github.com/L2V/like2vec/wiki/Utility-Matrix---LLR)                  
++ [Network Embeddings](https://github.com/L2V/like2vec/wiki/Network-Embeddings)                
++ [Prediction](https://github.com/L2V/like2vec/wiki/Prediction)                 
++ [Evaluation](https://github.com/L2V/like2vec/wiki/Evaluation)            
+
 
 ## Folder Structure
 ```
