@@ -61,7 +61,7 @@ object map {
 
     //println(mapK)
 
-    sc.parallelize(Seq(mapK)).saveAsTextFile(outputFile+"/map");
+    sc.parallelize(Seq(mapK)).coalesce(1).saveAsTextFile(outputFile+"/map");
 
 
 

@@ -40,7 +40,7 @@ object rmse {
       val rmseValue = Math.sqrt(numerator / denom)
 
 
-      sc.parallelize(Seq(rmseValue)).saveAsTextFile(outputFile+"/rmse")
+      sc.parallelize(Seq(rmseValue)).coalesce(1).saveAsTextFile(outputFile+"/rmse")
 
 
 
