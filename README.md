@@ -1,6 +1,7 @@
 # like2vec
 Like2Vec is a neaborhood based recommendation algorithm that uses network embeddings to create latent representations of transactional history
 
+![like2vec](https://raw.githubusercontent.com/L2V/like2vec/master/reports/figures/l2v-components.png "Pipeline components")
 
 
 
