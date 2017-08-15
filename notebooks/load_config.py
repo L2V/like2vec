@@ -17,7 +17,7 @@ def write_LLR_cli(l2v_params, l2v_cfg):
     llr_params_serialization = l2v_params['LLR']['options'][0] + l2v_params['LLR']['useroritem'][0] + str(l2v_params['LLR']['threshold']).replace(".","")
     output_folder = jar_serialization + "-" + today +  "-" + llr_params_serialization
     output_for_llr = l2v_cfg['PATHS']["OUTPUT"] + "llr_output/" + output_folder
-    LLR_EMR = """spark-submit --deploy-mode cluster --class llr.LLR {} --master yarn --options {} --useroritem {} --threshold {} --interactionsFile {} --outputFile {} --separator "," --maxInteractionsPerUserOrItem 500 --seed 12345""".format(llr_JAR, l2v_params['LLR']['options'], l2v_params['LLR']['useroritem'], l2v_params['LLR']['threshold'], l2v_cfg['DATA']['TRAIN'], output_for_llr )
+    LLR_EMR = """spark-submit --deploy-mode cluster --class llr.LLR {} --master yarn --options {} --useroritem {} --threshold {} --interactionsFile {} --outputFile {} --separator , --maxInteractionsPerUserOrItem 500 --seed 12345""".format(llr_JAR, l2v_params['LLR']['options'], l2v_params['LLR']['useroritem'], l2v_params['LLR']['threshold'], l2v_cfg['DATA']['TRAIN'], output_for_llr )
 
     return LLR_EMR, output_for_llr, llr_params_serialization
 
